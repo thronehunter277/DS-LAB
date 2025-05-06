@@ -1,0 +1,174 @@
+#include<stdio.h>
+#include<stdlib.h>
+typedef struct node {
+	int data;
+	struct node* next;
+} NODE_STRUCT;
+
+typedef NODE_STRUCT* NODE;
+
+NODE createNode(int data) {
+	NODE newNode = (NODE)malloc(sizeof(NODE_STRUCT));
+	newNode->data = data;
+	newNode->next = newNode;
+	return newNode;
+}
+
+NODE insertAtPositionInCLL(NODE first, int pos, int x) {
+	NODE newNode = createNode(x);
+	if (first == NULL) {
+		if (pos != 1) {
+			printf("Position not found\n");
+			free(newNode);
+			return first;
+		}
+		return newNode;
+	}
+
+	if (pos == 1) {
+	NODE temp = first;
+	while (temp->next != first) {
+		temp = temp->next;
+	}
+	temp->next = newNode;
+	newNode->next = first;
+	return newNode;
+	}
+
+	NODE temp = first;
+	int count = 1;
+	while (temp->next != first && count < pos - 1) {
+		temp = temp->next;
+		count++;
+	}
+
+	if (count == pos - 1) {
+		newNode->next = temp->next;
+		temp->next = newNode;
+	} else {
+		printf("Position not found\n");
+		free(newNode);
+	}
+
+	return first;
+}
+
+NODE deleteAtPositionInCLL(NODE first, int pos) {
+	if (first == NULL) {
+		printf("CLL is empty\n");
+		return NULL;
+	}
+
+	if (pos == 1) {
+		if (first->next == first) {
+			printf("Deleted element: %d\n", first->data);
+			free(first);
+			return NULL;
+		}
+		NODE last = first;
+		while (last->next != first) {
+			last = last->next;
+		}
+		NODE toDelete = first;
+		printf("Deleted element: %d\n", toDelete->data);
+		last->next = first->next;
+		first = first->next;
+		free(toDelete);
+		return first;
+	}
+
+	NODE temp = first;
+	int count = 1;
+	while (temp->next != first && count < pos - 1) {
+		temp = temp->next;
+		count++;
+	}
+	if (count == pos - 1 && temp->next != first) {
+		NODE toDelete = temp->next;
+		printf("Deleted element: %d\n", toDelete->data);
+		temp->next = toDelete->next;
+		free(toDelete);
+	} else {
+		printf("Position not found\n");
+	}
+	return first;
+}
+
+void traverseListInCLL(NODE first) {
+	if (first == NULL) {
+		printf("CLL is empty\n");
+		return;
+	}
+	NODE temp = first;
+	do {
+		printf("%d --> ", temp->data);
+		temp = temp->next;
+	} while (temp != first);
+	printf("\n");
+}
+
+NODE reverseCLL(NODE first) {
+	if (first == NULL || first->next == first) return first;
+	NODE prev = NULL, current = first, next = NULL;
+	NODE last = first;
+	do {
+		next = current->next;
+		current->next = prev;
+		prev = current;
+		current = next;
+	} while (current != first);
+	first->next = prev;
+	return prev;
+}
+
+
+
+void main() {
+    NODE first = NULL;
+    int x, pos, op;
+    while (1) {
+        printf("1.Insert 2.Delete 3.Display 4.Reverse 5.Exit\n");
+        printf("choice: ");
+        scanf("%d", &op);
+        switch (op) {
+            case 1:
+                printf("Position: ");
+                scanf("%d", &pos);
+                if (pos <= 0) {
+                    printf("Position not found\n");
+                } else {
+                    printf("Element: ");
+                    scanf("%d", &x);
+                    first = insertAtPositionInCLL(first, pos, x);
+                }
+                break;
+            case 2:
+                if (first == NULL) {
+                    printf("CLL is empty\n");
+                } else {
+                    printf("Position: ");
+                    scanf("%d", &pos);
+                    first = deleteAtPositionInCLL(first, pos);
+                }
+                break;
+            case 3:
+                if (first == NULL) {
+                    printf("CLL is empty\n");
+                } else {
+                    printf("Elements in CLL are: ");
+                    traverseListInCLL(first);
+                }
+                break;
+            case 4:
+                if (first == NULL) {
+                    printf("CLL is empty\n");
+                } else {
+                    first = reverseCLL(first);
+                    printf("CLL reversed\n");
+                }
+                break;
+            case 5:
+                exit(0);
+        }
+    }
+}
